@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.UserMapper">
+
+    <!-- 通用结果集映射：DB 字段 -> PO 属性（驼峰） -->
+    <resultMap id="BaseResultMap" type="com.example.demo.entity.User">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="email" property="email"/>
+        <result column="phone" property="phone"/>
+        <result column="age" property="age"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 通用列 -->
+    <sql id="Base_Column_List">
+        id, username, email, phone, age, status, create_time, update_time
+    </sql>
+
+    <!-- 分页查询通用 where 条件 -->
+    <sql id="Page_Where_Clause">
+        <where>
+            <if test="username != null and username != ''">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="email != null and email != ''">
+                AND email = #{email}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 根据主键查询 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_user
+        WHERE id = #{id}
+    </select>
+
+    <!-- 条件分页查询 -->
+    <select id="selectPage" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM t_user
+        <include refid="Page_Where_Clause"/>
+        ORDER BY id DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- 条件总数 -->
+    <select id="selectPageCount" resultType="long">
+        SELECT COUNT(1)
+        FROM t_user
+        <include refid="Page_Where_Clause"/>
+    </select>
+
+    <!-- 新增（含主键回填） -->
+    <insert id="insert" parameterType="com.example.demo.entity.User"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_user (username, email, phone, age, status, create_time, update_time)
+        VALUES (#{username}, #{email}, #{phone}, #{age},
+                <choose>
+                    <when test="status != null">#{status}</when>
+                    <otherwise>1</otherwise>
+                </choose>,
+                CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    </insert>
+
+    <!-- 根据主键动态更新 -->
+    <update id="updateById" parameterType="com.example.demo.entity.User">
+        UPDATE t_user
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="status != null">status = #{status},</if>
+            update_time = CURRENT_TIMESTAMP,
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据主键删除 -->
+    <delete id="deleteById">
+        DELETE FROM t_user WHERE id = #{id}
+    </delete>
+
+    <!-- 用户名计数 -->
+    <select id="countByUsername" resultType="long">
+        SELECT COUNT(1) FROM t_user WHERE username = #{username}
+    </select>
+
+</mapper>

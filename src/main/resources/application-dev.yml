@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://47.115.215.238:5432/dba
+    username: dba_test
+    password: dba_test
+
+logging:
+  level:
+    com.example.demo.mapper: DEBUG
