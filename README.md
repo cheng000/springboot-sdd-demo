@@ -1,4 +1,4 @@
-# SpringBoot 2.5 SDD 示例工程
+# SpringBoot 2.5 SDD Demo Project
 
 > 技术栈：Java 8 · SpringBoot 2.5.15 · 原生 MyBatis 2.2.2 · PostgreSQL · Lombok · MapStruct
 
