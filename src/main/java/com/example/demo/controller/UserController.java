@@ -5,6 +5,10 @@ import com.example.demo.common.page.PageResult;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.dto.UserQueryDTO;
 import com.example.demo.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -32,6 +36,7 @@ import javax.validation.constraints.Positive;
  * Controller 不需要关心返回值包装，因为 Service 已经返回 {@link CommonResult}。
  */
 @Slf4j
+@Tag(name = "用户管理", description = "用户的增删改查接口")
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -43,6 +48,7 @@ public class UserController {
     /**
      * 新增用户
      */
+    @Operation(summary = "新增用户", description = "用户名不能与已有用户重复")
     @PostMapping
     public CommonResult<Long> create(@RequestBody @Validated(UserDTO.Create.class) UserDTO dto) {
         return userService.create(dto);
@@ -51,6 +57,7 @@ public class UserController {
     /**
      * 修改用户
      */
+    @Operation(summary = "修改用户", description = "ID 必填，其余字段按需更新")
     @PutMapping
     public CommonResult<Void> update(@RequestBody @Validated(UserDTO.Update.class) UserDTO dto) {
         return userService.update(dto);
@@ -59,16 +66,22 @@ public class UserController {
     /**
      * 根据主键删除用户
      */
+    @Operation(summary = "删除用户")
     @DeleteMapping("/{id}")
-    public CommonResult<Void> delete(@PathVariable("id") @Positive(message = "用户 ID 必须为正整数") Long id) {
+    public CommonResult<Void> delete(
+            @Parameter(name = "id", description = "用户 ID", required = true, in = ParameterIn.PATH, example = "1")
+            @PathVariable("id") @Positive(message = "用户 ID 必须为正整数") Long id) {
         return userService.deleteById(id);
     }
 
     /**
      * 根据主键查询用户
      */
+    @Operation(summary = "查询用户详情")
     @GetMapping("/{id}")
-    public CommonResult<UserDTO> getById(@PathVariable("id") @Positive(message = "用户 ID 必须为正整数") Long id) {
+    public CommonResult<UserDTO> getById(
+            @Parameter(name = "id", description = "用户 ID", required = true, in = ParameterIn.PATH, example = "1")
+            @PathVariable("id") @Positive(message = "用户 ID 必须为正整数") Long id) {
         return userService.getById(id);
     }
 
@@ -77,6 +90,7 @@ public class UserController {
      * <p>
      * 由于查询参数是简单类型（pageNum/pageSize/username/...），使用 {@code @Validated} 触发 PageQuery 上的校验。
      */
+    @Operation(summary = "分页查询用户", description = "支持按用户名模糊、邮箱精确、状态过滤")
     @GetMapping
     public CommonResult<PageResult<UserDTO>> getPage(@Validated UserQueryDTO query) {
         return userService.getPage(query);

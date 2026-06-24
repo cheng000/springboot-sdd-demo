@@ -34,6 +34,30 @@ mybatis:
     default-statement-timeout: 30
   check-config-location: false
 
+# ===== SpringDoc OpenAPI =====
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha           # 接口分组按字母排序
+    operations-sorter: alpha     # 接口内方法按字母排序
+  default-flat-param-object: true
+  group-configs:
+    - group: default
+      paths-to-match: /**
+      packages-to-scan: com.example.demo.controller
+
+# ===== Knife4j 增强 =====
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn              # 中文 UI
+    enable-swagger-models: true  # 显示数据模型
+    enable-document: true        # 启用聚合文档
+    enable-footer: false
+    enable-after-script: true    # 调试后注入脚本（响应示例）
+
 logging:
   level:
     root: INFO
