@@ -1,0 +1,82 @@
+# ====================== 生产环境配置 ======================
+# 启动方式: java -jar target/springboot-sdd-demo.jar --spring.profiles.active=prod
+# 敏感信息建议通过环境变量注入，如: DB_HOST、DB_PORT、DB_NAME、DB_USERNAME、DB_PASSWORD
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: springboot-sdd-demo
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    default-property-inclusion: non_null
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:demo_db}?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 30
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: SddDemoHikariCP
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.example.demo.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+    default-fetch-size: 100
+    default-statement-timeout: 30
+
+# ===== SpringDoc OpenAPI（显式开启） =====
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  default-flat-param-object: true
+
+# ===== Knife4j 增强（显式开启） =====
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+    enable-swagger-models: true
+    enable-document: true
+    enable-footer: false
+    enable-after-script: true
+    enable-version: true
+    enable-reload-cache-parameter: false
+    enable-filter-multipart-api-method-type: POST
+    enable-filter-multipart-apis: false
+    enable-request-cache: true
+    enable-host: false
+    enable-host-text: 192.168.1.1:8080
+    enable-home-custom: false
+    home-custom-path: classpath:markdown/home.md
+    enable-search: false
+    enable-open-api: false
+    enable-group: true
+    enable-cors: false
+    enable-debug: true
+    enable-frontend-mock: false
+
+logging:
+  level:
+    root: INFO
+    com.example.demo: INFO
+    com.example.demo.mapper: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
